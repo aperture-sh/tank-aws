@@ -7,3 +7,8 @@
 
 # .tfvars files
 *.tfvars
+
+/tmp/cloud-hosts
+/tmp/kubeconfig
+/tmp/ssh_config
+/tmp/config_map_auth.yml

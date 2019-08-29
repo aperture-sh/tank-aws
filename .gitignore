@@ -12,3 +12,4 @@
 /tmp/kubeconfig
 /tmp/ssh_config
 /tmp/config_map_auth.yml
+.DS_Store

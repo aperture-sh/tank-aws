@@ -1,0 +1,38 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: navigator
+  labels:
+    app: navigator
+spec:
+  selector:
+    matchLabels:
+      app: navigator
+      role: master
+      tier: frontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: navigator
+        role: master
+        tier: frontend
+    spec:
+      containers:
+      - name: master
+        image: ap3rture/navigator:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config-volume
+        mountPath: /app/config
+      volumes:
+      - name: config-volume
+        configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+          name: navigator-config

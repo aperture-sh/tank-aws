@@ -9,4 +9,5 @@
 
 ### Hints
 
+* Helps to build suitable `kubeconfig` file: `aws --region <region> eks update-kubeconfig --name <cluster-name> --role-arn <eks-role>`
 * One easy way to communicate with EKS Clusters is https://eksctl.io/

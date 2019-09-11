@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: navigator-config
+  namespace: default
+data:
+  tank: http://{{public_endpoint}}/tank
+  exhauster.url: http://{{public_endpoint}}/exhauster
+  exhauster.enabled: true
+  mapbox_key: {{ mapbox_key }}

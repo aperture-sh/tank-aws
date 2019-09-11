@@ -48,7 +48,7 @@ variable "ami_id" {
   default = "ami-090f10efc254eaf55"
 }
 
-variable "cluster-name" {
+variable "cluster_name" {
   default = "tank-cluster"
   type    = "string"
 }

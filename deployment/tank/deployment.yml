@@ -1,0 +1,44 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: tank
+  labels:
+    app: tank
+spec:
+  selector:
+    matchLabels:
+      app: tank
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tank
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: tank
+        image: ap3rture/tank:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 500Mi
+        ports:
+        - containerPort: 8888
+        env:
+        - name: TANK_DB_HOSTS
+          value: 146.140.36.28
+        - name: TANK_DB_STRATEGY
+          value: NetworkTopologyStrategy
+        - name: TANK_DB_REPL
+          value: 2
+        - name: TANK_DB_DATACENTER
+          value: eu-central
+        - name: TANK_EXHAUSTER_ENABLED
+          value: true
+        - name: TANK_EXHAUSTER_HOST
+          value: exhauster-service
+        - name: TANK_EXHAUSTER_PORT
+          value: 8080

@@ -8,7 +8,7 @@ data  "template_file" "aws" {
         vm_username = "ubuntu"
         cassandra_data_dir = "/opt/data"
         bastion_node = aws_instance.gateway.public_dns
-        public_endpoint = aws_lb.tank_alb.dns_name
+        public_endpoint = "aws_lb.tank_alb.dns_name"
         cloud_provider = "aws"
         cloud_region = "${ var.region }"
         proxy_node = aws_instance.gateway.private_ip

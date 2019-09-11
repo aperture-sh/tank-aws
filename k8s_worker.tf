@@ -49,10 +49,17 @@ resource "aws_security_group" "tank-node" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = "${
     map(
      "Name", "terraform-eks-tank-node",
-     "kubernetes.io/cluster/${var.cluster-name}", "owned",
+     "kubernetes.io/cluster/${var.cluster_name}", "owned",
     )
   }"
 }
@@ -106,7 +113,7 @@ locals {
   tank-node-userdata = <<USERDATA
 #!/bin/bash
 set -o xtrace
-/etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.tank.endpoint}' --b64-cluster-ca '${aws_eks_cluster.tank.certificate_authority.0.data}' '${var.cluster-name}'
+/etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.tank.endpoint}' --b64-cluster-ca '${aws_eks_cluster.tank.certificate_authority.0.data}' '${var.cluster_name}'
 USERDATA
 }
 
@@ -118,6 +125,7 @@ resource "aws_launch_configuration" "tank" {
   name_prefix                 = "tank-eks"
   security_groups             = ["${aws_security_group.tank-node.id}"]
   user_data_base64            = "${base64encode(local.tank-node-userdata)}"
+  key_name = "${var.keypair}"
 
   lifecycle {
     create_before_destroy = true
@@ -125,12 +133,12 @@ resource "aws_launch_configuration" "tank" {
 }
 
 resource "aws_autoscaling_group" "tank" {
-  desired_capacity     = 2
+  desired_capacity     = 4
   launch_configuration = "${aws_launch_configuration.tank.id}"
-  max_size             = 2
+  max_size             = 6
   min_size             = 1
   name                 = "terraform-eks-tank"
-  vpc_zone_identifier  = "${aws_subnet.tank_public_subnet.*.id}"
+  vpc_zone_identifier  = "${aws_subnet.tank_private_subnet.*.id}"
 
   tag {
     key                 = "Name"
@@ -139,9 +147,14 @@ resource "aws_autoscaling_group" "tank" {
   }
 
   tag {
-    key                 = "kubernetes.io/cluster/${var.cluster-name}"
+    key                 = "kubernetes.io/cluster/${var.cluster_name}"
     value               = "owned"
     propagate_at_launch = true
   }
+
+  depends_on = [
+    "aws_eks_cluster.tank",
+    "kubernetes_config_map.auth"
+  ]
 }
 

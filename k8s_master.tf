@@ -50,20 +50,20 @@ resource "aws_security_group" "tank-cluster" {
 resource "aws_security_group_rule" "tank-cluster-ingress-workstation-https" {
   cidr_blocks       = ["0.0.0.0/0"]
   description       = "Allow workstation to communicate with the cluster API Server"
-  from_port         = 443
+  from_port         = 0
   protocol          = "tcp"
   security_group_id = "${aws_security_group.tank-cluster.id}"
-  to_port           = 443
+  to_port           = 0
   type              = "ingress"
 }
 
 resource "aws_eks_cluster" "tank" {
-  name            = "${var.cluster-name}"
+  name            = "${var.cluster_name}"
   role_arn        = "${aws_iam_role.tank-cluster.arn}"
 
   vpc_config {
     security_group_ids = ["${aws_security_group.tank-cluster.id}"]
-    subnet_ids         = "${aws_subnet.tank_public_subnet.*.id}"
+    subnet_ids         = "${aws_subnet.tank_private_subnet.*.id}"
   }
 
   depends_on = [

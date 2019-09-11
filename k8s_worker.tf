@@ -133,7 +133,7 @@ resource "aws_launch_configuration" "tank" {
 }
 
 resource "aws_autoscaling_group" "tank" {
-  desired_capacity     = 3
+  desired_capacity     = 2
   launch_configuration = "${aws_launch_configuration.tank.id}"
   max_size             = 3
   min_size             = 1

@@ -3,5 +3,5 @@ output "bastion_host" {
 }
 
 output "load_balancer_host" {
-    value = "${aws_lb.tank_alb.dns_name}"
+    value = "aws_lb.tank_alb.dns_name"
 }

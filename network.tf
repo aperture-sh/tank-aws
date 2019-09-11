@@ -27,6 +27,8 @@ resource "aws_subnet" "tank_public_subnet" {
 
   tags = {
     Name = "Tank Public Subnet"
+    "kubernetes.io/role/elb" = 1
+    "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 }
 
@@ -98,7 +100,7 @@ resource "aws_route_table_association" "tank_public_rt" {
   route_table_id = "${element(aws_route_table.tank_public_rt.*.id, count.index)}"
 }
 
-resource "aws_lb" "tank_alb" {
+/*resource "aws_lb" "tank_alb" {
   name               = "tank-alb"
   internal           = false
   load_balancer_type = "application"
@@ -217,7 +219,7 @@ resource "aws_lb_listener_rule" "grafana" {
   }
 }
 
-/*resource "aws_lb_target_group_attachment" "tank" {
+resource "aws_lb_target_group_attachment" "tank" {
   count = "${var.tank_node_count}"
   target_group_arn = "${aws_lb_target_group.tank.arn}"
   target_id        = "${element(aws_instance.tank.*.id, count.index)}"
@@ -229,7 +231,7 @@ resource "aws_lb_target_group_attachment" "navigator" {
   target_group_arn = "${aws_lb_target_group.navigator.arn}"
   target_id        = "${element(aws_instance.tank.*.id, count.index)}"
   port             = 8081
-}*/
+}
 
 resource "aws_lb_target_group_attachment" "exhauster" {
   target_group_arn = "${aws_lb_target_group.exhauster.arn}"
@@ -241,7 +243,7 @@ resource "aws_lb_target_group_attachment" "grafana" {
   target_group_arn = "${aws_lb_target_group.grafana.arn}"
   target_id        = "${aws_instance.gateway.id}"
   port             = 3000
-}
+}*/
 
 resource "aws_security_group" "http" {
   name        = "tank-http"

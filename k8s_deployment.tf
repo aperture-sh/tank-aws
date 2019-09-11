@@ -40,6 +40,16 @@ resource "kubernetes_config_map" "nginx_navigator" {
   }
 
   data = {
+    "config.json" = <<NAVIGATOR
+    {
+  "tank": "http://localhost/tank",
+  "exhauster": {
+    "url": "http://localhost/exhauster",
+    "enabled": true
+  },
+  "mapbox_key": ""
+}
+    NAVIGATOR
     "nginx.conf" = <<CONFIG
     # auto detects a good number of processes to run
 worker_processes auto;
@@ -77,6 +87,10 @@ http {
             try_files $uri $uri/ =404;
         }
 
+        location = /navigator/config.json {
+            root /opt/;
+        }
+
         # Media: images, icons, video, audio, HTC
         location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
           expires 1M;
@@ -111,7 +125,7 @@ resource "kubernetes_deployment" "tank" {
   }
 
   spec {
-    replicas = 5
+    replicas = 7
 
     selector {
       match_labels = {
@@ -252,6 +266,12 @@ resource "kubernetes_deployment" "navigator" {
             name       = "nginx-conf"
             read_only  = true
           }
+
+          volume_mount {
+            mount_path = "/opt/navigator"
+            name       = "navigator-conf"
+            read_only  = true
+          }
         }
       
 
@@ -262,6 +282,17 @@ resource "kubernetes_deployment" "navigator" {
           items {
             key = "nginx.conf"
             path = "nginx.conf"
+          }
+        }
+      }
+
+      volume {
+        name = "navigator-conf"
+        config_map {
+          name = "nginx-conf"
+          items {
+            key = "config.json"
+            path = "config.json"
           }
         }
       }

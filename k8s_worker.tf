@@ -133,9 +133,9 @@ resource "aws_launch_configuration" "tank" {
 }
 
 resource "aws_autoscaling_group" "tank" {
-  desired_capacity     = 2
+  desired_capacity     = 4
   launch_configuration = "${aws_launch_configuration.tank.id}"
-  max_size             = 3
+  max_size             = 6
   min_size             = 1
   name                 = "terraform-eks-tank"
   vpc_zone_identifier  = "${aws_subnet.tank_private_subnet.*.id}"
